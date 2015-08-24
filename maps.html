@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style type="text/css">
+      #map-canvas { height: 500px; margin: 0; padding: 0;}
+	  #header { margin: 0; padding: 5px; }
+    </style>
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+
+	<!-- Optional theme -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script type="text/javascript"
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCm-7rZS1T3CmY3cabQBmCK3qfTUqaDZVI">
+    </script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script type="text/javascript">
+		// http://jsfiddle.net/q5am2Lzj/
+	
+	  // locations
+	  var homeLoc = [
+		['Tampa', 27.9681, -82.4764]
+	  ];	  
+	  var locationsVisited = [
+		['Yellowstone', 44.6000,-110.5000],
+		['New York City', 40.7127, -74.0059],
+		['Bellevue', 47.6000, -122.1667]
+	  ];	  
+	  var locationsToVisit = [
+		['Yosemite', 37.8499,-119.5677]
+	  ];
+	
+      function initialize() {
+		// map options
+		var center = new google.maps.LatLng(27.0000,17.0000);
+		var mapOptions = {
+			zoom: 2,
+			center: center
+		};
+		
+		// create map
+		var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+		setMarkers(map, homeLoc, markHome);
+	    setMarkers(map, locationsVisited, markVisited);	
+		setMarkers(map, locationsToVisit, markDestination);
+		$('#post').html('<p>Hello!<p>');
+	  }
+	  
+	  // marker images
+	  var markHome = {
+		url: 'https://cdn4.iconfinder.com/data/icons/miu/22/map_location_pin_map-marker_-128.png',
+		scaledSize: new google.maps.Size(20,30)
+	  }
+	  var markVisited = {
+		url: 'https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678111-map-marker-128.png',
+		scaledSize: new google.maps.Size(30,30)
+	  };
+	  var markDestination = {
+		url: 'https://cdn2.iconfinder.com/data/icons/perfect-flat-icons-2/512/Location_marker_pin_map_gps.png',
+		scaledSize: new google.maps.Size(30,30)
+	  };
+	  
+	  function setMarkers(map, locations, markIcon) {
+		for(var i = 0; i < locations.length; i++) {
+			var loc = locations[i];
+			var latlng = new google.maps.LatLng(loc[1], loc[2]);
+			var marker = new google.maps.Marker({
+				position: latlng,
+				map: map,
+				icon: markIcon,
+				title: loc[0]
+			});
+
+			// add a click event listener - closures ...
+			google.maps.event.addListener(marker, 'click', function(marker, i) {
+				// open related blog post and photo gallery
+				return function() {
+					$('#post').html('<p>'+this.title+'</p>');
+				};
+			}(marker, i));
+			google.maps.event.trigger(marker, 'click');
+		}
+	  }
+	  
+	  var post = {
+		location: 'Home',
+		id: 0,
+		date: {start: '', end: ''},
+		entry: '',
+		gallery: ''		
+	  }
+
+	  // make asynch
+/*	  function loadScript() {
+		var script = document.createElement('script');
+	    script.type = 'text/javascript';
+		script.src = 'https://maps.googleapis.com/maps/api/js?v=3.exp' +
+		  '&signed_in=true&callback=initialize';
+		document.body.appendChild(script);
+	  }
+
+	  window.onload = loadScript;
+*/
+	  google.maps.event.addDomListener(window, 'load', initialize);
+    </script>
+  </head>
+  <body>
+	<div id="header"></div>
+	<div class="container">
+		<div class="row">
+			<div id="map-canvas"></div>
+		</div>
+		<div class="row">
+			<div>
+				<span class="label label-default">Home</span>
+				<span class="label label-danger">Places I've Been!</span>
+				<span class="label label-primary">Places To Go!</span>
+			</div>
+		</div>
+		<br/>
+		<div class="row">
+			<div id="post">Loading...</div>
+		</div>
+	</div>
+	<div id="footer"></div>
+  </body>
+</html>
